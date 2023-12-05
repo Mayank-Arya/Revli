@@ -12,6 +12,7 @@ userRouter.post('/register', async (req, res) => {
 
     if (isUserPresent) {
       return res.status(400).json({ msg: 'User already present' });
+      
     }
 
     const hashedPassword = await bcrypt.hash(password, 5);
@@ -28,10 +29,10 @@ userRouter.post('/register', async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({ msg: 'Signup successful' });
+    res.status(200).send({ msg: 'Signup successful' });
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ msg: 'Internal server error' });
+    res.status(500).send({ msg: 'Internal server error' });
   }
 });
 
@@ -44,9 +45,9 @@ userRouter.post('/login', async (req, res) => {
       const user = await User.findOne({ registrationDetails });
   
       if (!user) {
-        return res.status(404).json({ msg: 'User not found' });
+        return res.status(404).send({ msg: 'User not found' });
       }
-      
+
    // bcrypt.compare to compare the entered password with the hashed password
       const passwordMatch = await bcrypt.compare(password, user.password);
   
@@ -57,10 +58,10 @@ userRouter.post('/login', async (req, res) => {
       // Generate JWT token for authentication
       const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
   
-      res.status(200).json({ userId: user._id, token });
+      res.status(200).send({ userId: user._id, token });
     } catch (err) {
       console.error(err.message);
-      res.status(500).json({ msg: 'Internal server error' });
+      res.status(500).send({ msg: 'Internal server error' });
     }
   });
 
